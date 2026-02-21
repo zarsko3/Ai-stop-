@@ -310,6 +310,7 @@ export const createDefaultNodeData = (type: NodeType): WorkflowNodeData => {
       return {
         actionPrompt: "",
         computedPrompt: "",
+        referenceImage: null,
       } as SceneNodeData;
   }
 };

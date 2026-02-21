@@ -121,6 +121,10 @@ function getSourceOutput(
     return { type: "text", value: parts.join(", ") || null };
   } else if (sourceNode.type === "scene") {
     const sceneData = sourceNode.data as SceneNodeData;
+    // "image-out" handle routes the character's reference image downstream
+    if (sourceHandle === "image-out") {
+      return { type: "image", value: sceneData.referenceImage };
+    }
     return { type: "text", value: sceneData.computedPrompt || null };
   }
   return { type: "image", value: null };

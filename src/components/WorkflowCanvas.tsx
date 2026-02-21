@@ -165,7 +165,7 @@ const getNodeHandles = (nodeType: string): { inputs: string[]; outputs: string[]
     case "style":
       return { inputs: [], outputs: ["style-out"] };
     case "scene":
-      return { inputs: ["character-in", "style-in"], outputs: ["prompt-out"] };
+      return { inputs: ["character-in", "style-in"], outputs: ["prompt-out", "image-out"] };
     default:
       return { inputs: [], outputs: [] };
   }

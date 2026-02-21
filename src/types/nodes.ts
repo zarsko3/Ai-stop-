@@ -405,11 +405,13 @@ export interface StyleNodeData extends BaseNodeData {
 }
 
 /**
- * Scene node - mixes character and style inputs with an action prompt to produce a combined prompt
+ * Scene node - mixes character and style inputs with an action prompt to produce a combined prompt.
+ * Also passes the character's reference image through so generation nodes can use it for FaceID/ControlNet.
  */
 export interface SceneNodeData extends BaseNodeData {
-  actionPrompt: string;   // The specific action for this scene (e.g. "running in the rain")
-  computedPrompt: string; // Final concatenated prompt combining character + action + style
+  actionPrompt: string;          // The specific action for this scene (e.g. "running in the rain")
+  computedPrompt: string;        // Final concatenated prompt combining character + action + style
+  referenceImage: string | null; // Character reference image passed through from CharacterNode
 }
 
 /**
