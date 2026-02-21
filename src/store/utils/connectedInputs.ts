@@ -24,6 +24,9 @@ import {
   PromptConstructorNodeData,
   LLMGenerateNodeData,
   GLBViewerNodeData,
+  CharacterNodeData,
+  StyleNodeData,
+  SceneNodeData,
 } from "@/types";
 
 /**
@@ -109,6 +112,16 @@ function getSourceOutput(
     return { type: "image", value: (sourceNode.data as VideoFrameGrabNodeData).outputImage };
   } else if (sourceNode.type === "glbViewer") {
     return { type: "image", value: (sourceNode.data as GLBViewerNodeData).capturedImage };
+  } else if (sourceNode.type === "character") {
+    const charData = sourceNode.data as CharacterNodeData;
+    return { type: "text", value: charData.baseDescription || null };
+  } else if (sourceNode.type === "style") {
+    const styleData = sourceNode.data as StyleNodeData;
+    const parts = [styleData.lighting, styleData.cameraShot, styleData.vibe].filter(Boolean);
+    return { type: "text", value: parts.join(", ") || null };
+  } else if (sourceNode.type === "scene") {
+    const sceneData = sourceNode.data as SceneNodeData;
+    return { type: "text", value: sceneData.computedPrompt || null };
   }
   return { type: "image", value: null };
 }

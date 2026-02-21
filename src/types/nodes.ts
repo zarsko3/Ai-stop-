@@ -42,7 +42,10 @@ export type NodeType =
   | "videoTrim"
   | "videoFrameGrab"
   | "generate3d"
-  | "glbViewer";
+  | "glbViewer"
+  | "character"
+  | "style"
+  | "scene";
 
 /**
  * Node execution status
@@ -385,6 +388,31 @@ export interface GLBViewerNodeData extends BaseNodeData {
 }
 
 /**
+ * Character node - defines a reusable character with a reference image and description
+ */
+export interface CharacterNodeData extends BaseNodeData {
+  referenceImage: string | null; // Base64 data URL of the character reference image
+  baseDescription: string;       // Text description of the character
+}
+
+/**
+ * Style node - defines cinematographic style parameters for a scene
+ */
+export interface StyleNodeData extends BaseNodeData {
+  lighting: string;    // Lighting description (e.g. "golden hour", "hard rim light")
+  cameraShot: string;  // Camera shot type (e.g. "low angle wide shot")
+  vibe: string;        // Overall aesthetic vibe (e.g. "cinematic", "gritty neo-noir")
+}
+
+/**
+ * Scene node - mixes character and style inputs with an action prompt to produce a combined prompt
+ */
+export interface SceneNodeData extends BaseNodeData {
+  actionPrompt: string;   // The specific action for this scene (e.g. "running in the rain")
+  computedPrompt: string; // Final concatenated prompt combining character + action + style
+}
+
+/**
  * Union of all node data types
  */
 export type WorkflowNodeData =
@@ -407,7 +435,10 @@ export type WorkflowNodeData =
   | EaseCurveNodeData
   | VideoTrimNodeData
   | VideoFrameGrabNodeData
-  | GLBViewerNodeData;
+  | GLBViewerNodeData
+  | CharacterNodeData
+  | StyleNodeData
+  | SceneNodeData;
 
 /**
  * Workflow node with typed data (extended with optional groupId)

@@ -19,6 +19,9 @@ import {
   VideoTrimNodeData,
   VideoFrameGrabNodeData,
   GLBViewerNodeData,
+  CharacterNodeData,
+  StyleNodeData,
+  SceneNodeData,
   WorkflowNodeData,
   GroupColor,
   SelectedModel,
@@ -50,6 +53,9 @@ export const defaultNodeDimensions: Record<NodeType, { width: number; height: nu
   videoTrim: { width: 360, height: 360 },
   videoFrameGrab: { width: 320, height: 320 },
   glbViewer: { width: 360, height: 380 },
+  character: { width: 300, height: 320 },
+  style: { width: 300, height: 260 },
+  scene: { width: 340, height: 360 },
 };
 
 /**
@@ -289,5 +295,21 @@ export const createDefaultNodeData = (type: NodeType): WorkflowNodeData => {
         filename: null,
         capturedImage: null,
       } as GLBViewerNodeData;
+    case "character":
+      return {
+        referenceImage: null,
+        baseDescription: "",
+      } as CharacterNodeData;
+    case "style":
+      return {
+        lighting: "",
+        cameraShot: "",
+        vibe: "",
+      } as StyleNodeData;
+    case "scene":
+      return {
+        actionPrompt: "",
+        computedPrompt: "",
+      } as SceneNodeData;
   }
 };

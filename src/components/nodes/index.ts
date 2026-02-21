@@ -18,3 +18,6 @@ export { EaseCurveNode } from "./EaseCurveNode";
 export { VideoTrimNode } from "./VideoTrimNode";
 export { VideoFrameGrabNode } from "./VideoFrameGrabNode";
 export { GroupNode } from "./GroupNode";
+export { CharacterNode } from "./CharacterNode";
+export { StyleNode } from "./StyleNode";
+export { SceneNode } from "./SceneNode";

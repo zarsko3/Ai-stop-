@@ -207,6 +207,15 @@ const IMAGE_SOURCE_OPTIONS: MenuOption[] = [
 
 const TEXT_SOURCE_OPTIONS: MenuOption[] = [
   {
+    type: "scene",
+    label: "Scene (Director)",
+    icon: (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75.125v-.375a1.125 1.125 0 011.125-1.125H3m0 0h.375m-.375 0H3m0 0V9m0 0h.375M3 9H2.625A1.125 1.125 0 011.5 7.875V4.125A1.125 1.125 0 012.625 3H21.375A1.125 1.125 0 0122.5 4.125v3.75A1.125 1.125 0 0121.375 9H21m0 0H3m18 0h.375M21 9v9.375M21 18.375A1.125 1.125 0 0119.875 19.5H18m3-1.125v.375A1.125 1.125 0 0119.875 19.5m0 0H18m1.875-1.125H18m0 0H6m12 0V9" />
+      </svg>
+    ),
+  },
+  {
     type: "prompt",
     label: "Prompt",
     icon: (

@@ -40,6 +40,9 @@ import {
   EaseCurveNode,
   VideoTrimNode,
   VideoFrameGrabNode,
+  CharacterNode,
+  StyleNode,
+  SceneNode,
 } from "./nodes";
 
 // Lazy-load GLBViewerNode to avoid bundling three.js for users who don't use 3D nodes
@@ -81,6 +84,9 @@ const nodeTypes: NodeTypes = {
   videoTrim: VideoTrimNode,
   videoFrameGrab: VideoFrameGrabNode,
   glbViewer: GLBViewerNode,
+  character: CharacterNode,
+  style: StyleNode,
+  scene: SceneNode,
 };
 
 const edgeTypes: EdgeTypes = {
@@ -154,6 +160,12 @@ const getNodeHandles = (nodeType: string): { inputs: string[]; outputs: string[]
       return { inputs: ["video"], outputs: ["image"] };
     case "glbViewer":
       return { inputs: ["3d"], outputs: ["image"] };
+    case "character":
+      return { inputs: [], outputs: ["character-out"] };
+    case "style":
+      return { inputs: [], outputs: ["style-out"] };
+    case "scene":
+      return { inputs: ["character-in", "style-in"], outputs: ["prompt-out"] };
     default:
       return { inputs: [], outputs: [] };
   }
@@ -1126,6 +1138,15 @@ export function WorkflowCanvas() {
           case "t":
             nodeType = "generateAudio";
             break;
+          case "c":
+            nodeType = "character";
+            break;
+          case "s":
+            nodeType = "style";
+            break;
+          case "n":
+            nodeType = "scene";
+            break;
         }
 
         if (nodeType) {
@@ -1153,6 +1174,9 @@ export function WorkflowCanvas() {
             videoTrim: { width: 360, height: 360 },
             videoFrameGrab: { width: 320, height: 320 },
             glbViewer: { width: 360, height: 380 },
+            character: { width: 300, height: 320 },
+            style: { width: 300, height: 260 },
+            scene: { width: 340, height: 360 },
           };
           const dims = defaultDimensions[nodeType];
           addNode(nodeType, { x: centerX - dims.width / 2, y: centerY - dims.height / 2 });
@@ -1746,6 +1770,12 @@ export function WorkflowCanvas() {
                 return "#38bdf8"; // sky-400 (image from video)
               case "glbViewer":
                 return "#0ea5e9"; // sky-500 (3D viewport)
+              case "character":
+                return "#f43f5e"; // rose-500 (character/person)
+              case "style":
+                return "#a855f7"; // purple-500 (style/aesthetics)
+              case "scene":
+                return "#10b981"; // emerald-500 (scene/action)
               default:
                 return "#94a3b8";
             }
