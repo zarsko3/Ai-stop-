@@ -13,15 +13,15 @@ export interface StyleState {
   vibe: string;
 }
 
-export interface SceneFrame {
-  thumbnail: string | null; // base64 data URL once generated
-}
-
 export interface Scene {
   id: string;
   action: string;
-  startFrame: SceneFrame;
-  endFrame: SceneFrame;
+  // Generated images (base64 data URLs returned from the API)
+  startImageUrl: string | null;
+  endImageUrl: string | null;
+  // Async generation flags
+  isGeneratingStart: boolean;
+  isGeneratingEnd: boolean;
 }
 
 interface DirectorStore {
@@ -36,11 +36,7 @@ interface DirectorStore {
   addScene: () => void;
   updateScene: (id: string, partial: Partial<Pick<Scene, "action">>) => void;
   removeScene: (id: string) => void;
-  setFrameThumbnail: (
-    sceneId: string,
-    frameType: "start" | "end",
-    thumbnail: string
-  ) => void;
+  generateFrameImage: (sceneId: string, frameType: "start" | "end") => Promise<void>;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -49,8 +45,10 @@ function makeScene(): Scene {
   return {
     id: crypto.randomUUID(),
     action: "",
-    startFrame: { thumbnail: null },
-    endFrame: { thumbnail: null },
+    startImageUrl: null,
+    endImageUrl: null,
+    isGeneratingStart: false,
+    isGeneratingEnd: false,
   };
 }
 
@@ -74,7 +72,7 @@ export function buildPrompt(
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
-export const useDirectorStore = create<DirectorStore>((set) => ({
+export const useDirectorStore = create<DirectorStore>((set, get) => ({
   projectName: "Untitled Project",
   character: { image: null, description: "" },
   style: { lighting: "", camera: "", vibe: "" },
@@ -101,12 +99,68 @@ export const useDirectorStore = create<DirectorStore>((set) => ({
       scenes: state.scenes.filter((s) => s.id !== id),
     })),
 
-  setFrameThumbnail: (sceneId, frameType, thumbnail) =>
+  generateFrameImage: async (sceneId, frameType) => {
+    const { character, style, scenes } = get();
+    const scene = scenes.find((s) => s.id === sceneId);
+    if (!scene) return;
+
+    const generatingKey =
+      frameType === "start" ? "isGeneratingStart" : "isGeneratingEnd";
+
+    // ── Mark generating ────────────────────────────────────────────────────
     set((state) => ({
-      scenes: state.scenes.map((s) => {
-        if (s.id !== sceneId) return s;
-        const key = frameType === "start" ? "startFrame" : "endFrame";
-        return { ...s, [key]: { thumbnail } };
-      }),
-    })),
+      scenes: state.scenes.map((s) =>
+        s.id === sceneId ? { ...s, [generatingKey]: true } : s
+      ),
+    }));
+
+    try {
+      const prompt = buildPrompt(character, style, scene.action);
+
+      // Build the request body.  Pass the character reference image when
+      // available so the model can apply FaceID / image-to-image guidance.
+      const body: Record<string, unknown> = {
+        prompt,
+        model: "nano-banana",
+        aspectRatio: "16:9",
+      };
+
+      if (character.image) {
+        body.images = [character.image];
+      }
+
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const data = (await res.json()) as {
+        success: boolean;
+        image?: string;
+        error?: string;
+      };
+
+      if (!res.ok || !data.success || !data.image) {
+        throw new Error(data.error ?? "Generation failed — no image returned");
+      }
+
+      // ── Persist result ─────────────────────────────────────────────────
+      const imageKey = frameType === "start" ? "startImageUrl" : "endImageUrl";
+      set((state) => ({
+        scenes: state.scenes.map((s) =>
+          s.id === sceneId
+            ? { ...s, [imageKey]: data.image!, [generatingKey]: false }
+            : s
+        ),
+      }));
+    } catch (_err) {
+      // Clear the loading flag; the placeholder remains empty so users can retry
+      set((state) => ({
+        scenes: state.scenes.map((s) =>
+          s.id === sceneId ? { ...s, [generatingKey]: false } : s
+        ),
+      }));
+    }
+  },
 }));

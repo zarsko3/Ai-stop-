@@ -23,7 +23,7 @@ function buildFilmFrames(scenes: Scene[]): FilmFrame[] {
       sceneIndex: index,
       frameType: "Start" as const,
       frameLabel: `${String(index + 1).padStart(2, "0")}S`,
-      thumbnail: scene.startFrame.thumbnail,
+      thumbnail: scene.startImageUrl,
       sceneAction: scene.action,
     },
     {
@@ -31,7 +31,7 @@ function buildFilmFrames(scenes: Scene[]): FilmFrame[] {
       sceneIndex: index,
       frameType: "End" as const,
       frameLabel: `${String(index + 1).padStart(2, "0")}E`,
-      thumbnail: scene.endFrame.thumbnail,
+      thumbnail: scene.endImageUrl,
       sceneAction: scene.action,
     },
   ]);
