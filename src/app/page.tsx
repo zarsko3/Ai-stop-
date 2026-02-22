@@ -1,34 +1,24 @@
 "use client";
 
-import { useEffect } from "react";
-import { ReactFlowProvider } from "@xyflow/react";
-import { Header } from "@/components/Header";
-import { WorkflowCanvas } from "@/components/WorkflowCanvas";
-import { FloatingActionBar } from "@/components/FloatingActionBar";
-import { AnnotationModal } from "@/components/AnnotationModal";
+import { DirectorHeader } from "@/components/director/DirectorHeader";
+import { Sidebar } from "@/components/director/Sidebar";
+import { MainEditor } from "@/components/director/MainEditor";
 import { StoryboardPanel } from "@/components/StoryboardPanel";
-import { useWorkflowStore } from "@/store/workflowStore";
 
 export default function Home() {
-  const initializeAutoSave = useWorkflowStore(
-    (state) => state.initializeAutoSave
-  );
-  const cleanupAutoSave = useWorkflowStore((state) => state.cleanupAutoSave);
-
-  useEffect(() => {
-    initializeAutoSave();
-    return () => cleanupAutoSave();
-  }, [initializeAutoSave, cleanupAutoSave]);
-
   return (
-    <ReactFlowProvider>
-      <div className="h-screen flex flex-col">
-        <Header />
-        <WorkflowCanvas />
-        <FloatingActionBar />
-        <StoryboardPanel />
-        <AnnotationModal />
+    <div className="h-screen flex flex-col bg-neutral-950 text-neutral-100 overflow-hidden">
+      {/* Top bar */}
+      <DirectorHeader />
+
+      {/* Sidebar + scrolling editor */}
+      <div className="flex flex-1 min-h-0">
+        <Sidebar />
+        <MainEditor />
       </div>
-    </ReactFlowProvider>
+
+      {/* Fixed bottom film-strip */}
+      <StoryboardPanel />
+    </div>
   );
 }
